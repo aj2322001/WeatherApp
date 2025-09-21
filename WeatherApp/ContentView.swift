@@ -39,7 +39,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             // background
-            BackgroundView(isNight: $weatherData.first!.isNight)
+            BackgroundView(isNight: weatherData.first!.isNight)
             
             // Content
             VStack {
@@ -98,7 +98,7 @@ struct WeatherDayView: View {
 }
 
 struct BackgroundView: View {
-    @Binding var isNight: Bool
+    var isNight: Bool
     var body: some View {
         LinearGradient (
             gradient: Gradient(colors: isNight ? [.black,.gray] : [.blue,.blue.opacity(0.25)]),
