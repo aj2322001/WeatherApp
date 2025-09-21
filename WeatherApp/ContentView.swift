@@ -8,32 +8,58 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var weatherData: [WeatherDayModel] = [
+        WeatherDayModel(
+            dayOfWeek: "TUE",
+            imageName: "cloud.sun.fill",
+            temperature: 74
+        ),
+        WeatherDayModel(
+            dayOfWeek: "Wed",
+            imageName: "sun.max.fill",
+            temperature: 88
+        ),
+        WeatherDayModel(
+            dayOfWeek: "THR",
+            imageName: "wind.snow",
+            temperature: 55
+        ),
+        WeatherDayModel(
+            dayOfWeek: "FRI",
+            imageName: "sunset.fill",
+            temperature: 60
+        ),
+        WeatherDayModel(
+            dayOfWeek: "SAT",
+            imageName: "snow",
+            temperature: 28
+        ),
+    ]
+    
     var body: some View {
         ZStack {
             // background
-            BackgroundView(topColor: .blue, bottomColor: .blue.opacity(0.25))
+            BackgroundView(isNight: $weatherData.first!.isNight)
             
             // Content
             VStack {
-                CityNameView(cityName: "Cupertino, CA")
+                CityNameView(cityName: "Bangalore, IN")
                 
                 MainWeatherStatusView(
-                    imageName: "cloud.sun.fill",
+                    imageName: weatherData.first!.isNight ? "moon.stars.fill" : "cloud.sun.fill",
                     temerature: 76
                 )
                 
                 HStack(spacing: 20){
-                    WeatherDayView(dayOfWeek: "TUE", imageName: "cloud.sun.fill", temperatue: 76)
-                    WeatherDayView(dayOfWeek: "WED", imageName: "sun.max.fill", temperatue: 88)
-                    WeatherDayView(dayOfWeek: "THR", imageName: "wind.snow", temperatue: 55)
-                    WeatherDayView(dayOfWeek: "FRI", imageName: "sunset.fill", temperatue: 60)
-                    WeatherDayView(dayOfWeek: "DAT", imageName: "snow", temperatue: 25)
+                    ForEach(weatherData) { weatherItem in
+                        WeatherDayView(weatherData: weatherItem)
+                    }
                 }
                 
                 Spacer()
                 
                 Button {
-                    print("Button Pressed")
+                    weatherData[0].isNight.toggle()
                 } label: {
                     ButtonView(title: "Change Day Time")
                 }
@@ -41,8 +67,6 @@ struct ContentView: View {
                 Spacer()
 
             }
-            
-            
         }
     }
 }
@@ -53,32 +77,31 @@ struct ContentView: View {
 }
 
 struct WeatherDayView: View {
-    var dayOfWeek: String
-    var imageName: String
-    var temperatue: Int
+    let weatherData: WeatherDayModel?
     var body: some View {
-        VStack(spacing: 4){
-            Text(dayOfWeek)
-                .font(.system(size: 16,weight: .medium))
-                .foregroundStyle(.white)
-            Image(systemName: imageName)
-                .renderingMode(.original)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 40, height: 40)
-            Text("\(temperatue)°" )
-                .font(.system(size: 28,weight: .medium))
-                .foregroundStyle(.white)
+        if let weatherData {
+            VStack(spacing: 4){
+                Text(weatherData.dayOfWeek)
+                    .font(.system(size: 16,weight: .medium))
+                    .foregroundStyle(.white)
+                Image(systemName: weatherData.imageName)
+                    .renderingMode(.original)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+                Text("\(Int(weatherData.temperature))°" )
+                    .font(.system(size: 28,weight: .medium))
+                    .foregroundStyle(.white)
+            }
         }
     }
 }
 
 struct BackgroundView: View {
-    var topColor: Color
-    var bottomColor: Color
+    @Binding var isNight: Bool
     var body: some View {
         LinearGradient (
-            gradient: Gradient(colors: [topColor,bottomColor]),
+            gradient: Gradient(colors: isNight ? [.black,.gray] : [.blue,.blue.opacity(0.25)]),
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
